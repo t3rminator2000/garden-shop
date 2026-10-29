@@ -34,6 +34,7 @@ const PATHS = {
   print: (<><path d="M7 9V4h10v5" /><rect x="4" y="9" width="16" height="7" rx="2" /><path d="M7 14h10v6H7z" /></>),
   upload: <path d="M12 16V4M8 8l4-4 4 4M5 15v4h14v-4" />,
   download: <path d="M12 4v12M8 12l4 4 4-4M5 15v4h14v-4" />,
+  link: (<><path d="M10.5 13.5a3.6 3.6 0 0 0 5.1 0l2.9-2.9a3.6 3.6 0 0 0-5.1-5.1l-1.2 1.2" /><path d="M13.5 10.5a3.6 3.6 0 0 0-5.1 0l-2.9 2.9a3.6 3.6 0 0 0 5.1 5.1l1.2-1.2" /></>),
   tag: (<><path d="M4 11.5V4h7.5L20 12.5 12.5 20z" /><circle cx="8.2" cy="7.8" r="1.3" /></>),
 }
 

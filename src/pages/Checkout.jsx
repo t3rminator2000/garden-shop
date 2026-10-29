@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs'
 import Icon from '../components/Icon'
-import { Checkbox, RadioOption, SelectField, TextField } from '../components/Fields'
+import { Checkbox, PasswordField, RadioOption, SelectField, TextField } from '../components/Fields'
 import { EmptyState, Spinner } from '../components/States'
 import { ApiError, authApi, ordersApi } from '../api'
 import { DELIVERY, PAYMENTS, REGIONS, deliveryCost } from '../constants'
@@ -12,17 +12,20 @@ import { useUI } from '../context/UIContext'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { formatPrice } from '../utils/format'
 import { promoDiscount } from '../utils/promo'
-import { formatPhone, validateEmail, validateIndex, validatePhone, validateRequired } from '../utils/validators'
+import { formatPhone, validateEmail, validateIndex, validatePassword, validatePhone, validateRequired } from '../utils/validators'
 
 const STEPS = ['Контакты', 'Доставка', 'Оплата', 'Подтверждение']
 
 function validate(f) {
   const needsAddress = DELIVERY.find((d) => d.id === f.delivery)?.needsAddress
   const words = f.name.trim().split(/\s+/).filter(Boolean)
+  // Для аккаунта почта обязательна: это логин
+  const needsAccount = f.createAccount
   return {
     name: !f.name.trim() ? 'Введите фамилию и имя' : words.length < 2 ? 'Укажите фамилию и имя' : '',
     phone: validatePhone(f.phone),
-    email: validateEmail(f.email, { required: false }),
+    email: needsAccount ? validateEmail(f.email) : validateEmail(f.email, { required: false }),
+    password: needsAccount ? validatePassword(f.password) : '',
     index: needsAddress ? validateIndex(f.index) : '',
     city: needsAddress ? validateRequired(f.city, 'Введите город') : '',
     street: needsAddress ? validateRequired(f.street, 'Введите улицу') : '',
@@ -35,7 +38,7 @@ function validate(f) {
 export default function Checkout() {
   useDocumentTitle('Оформление заказа')
   const navigate = useNavigate()
-  const { user, isAuth } = useAuth()
+  const { user, isAuth, register } = useAuth()
   const { lines, items, loading, goodsTotal, totalQty, clear, promo, promoOk, promoTitle } = useCart()
   const { showToast } = useUI()
   const formRef = useRef(null)
@@ -43,6 +46,7 @@ export default function Checkout() {
   const [form, setForm] = useState({
     name: '', phone: '', email: '', region: REGIONS[0].name, delivery: 'post',
     index: '', city: '', street: '', house: '', flat: '', payment: 'card', comment: '', consent: false,
+    createAccount: false, password: '',
   })
   const [touched, setTouched] = useState({})
   const [attempted, setAttempted] = useState(false)
@@ -96,6 +100,24 @@ export default function Checkout() {
     }
     setBusy(true)
     try {
+      // Сначала аккаунт, иначе заказ не к кому привязать
+      let owner = user
+      if (!isAuth && form.createAccount) {
+        try {
+          owner = await register({
+            name: form.name.trim(),
+            email: form.email.trim(),
+            phone: form.phone,
+            password: form.password,
+            confirm: form.password,
+          })
+        } catch (err) {
+          const msg = err?.fields?.email || (err instanceof ApiError ? err.message : 'Не удалось создать аккаунт')
+          setSubmitError(`${msg}. Снимите галочку «Создать аккаунт», чтобы оформить заказ без него`)
+          setBusy(false)
+          return
+        }
+      }
       const order = await ordersApi.createOrder({
         lines: lines.map((l) => ({ productId: l.productId, qty: l.qty })),
         contact: { name: form.name.trim(), phone: form.phone, email: form.email.trim() },
@@ -105,9 +127,10 @@ export default function Checkout() {
         payment: form.payment,
         comment: form.comment,
         promo: promoOk ? promo : '',
-        ownerKey: user?.key || null,
+        ownerKey: owner?.key || null,
       })
       clear()
+      if (!isAuth && form.createAccount) showToast('Аккаунт создан, заказ сохранён в личном кабинете', 'success')
       navigate(`/checkout/success/${order.id}`, { replace: true })
     } catch (err) {
       const msg = err instanceof ApiError ? err.message : 'Не удалось оформить заказ. Попробуйте ещё раз'
@@ -162,7 +185,7 @@ export default function Checkout() {
             <TextField label="Фамилия, имя, отчество" required value={form.name} error={show('name')} autoComplete="name" maxLength={100} onChange={(e) => set('name', e.target.value)} onBlur={blur('name')} />
             <div className="panel__row">
               <TextField label="Телефон" required type="tel" inputMode="tel" autoComplete="tel" placeholder="+7 (999) 999-99-99" value={form.phone} error={show('phone')} onChange={(e) => set('phone', formatPhone(e.target.value))} onBlur={blur('phone')} />
-              <TextField label="E-mail" type="email" autoComplete="email" placeholder="name@example.ru" value={form.email} error={show('email')} maxLength={100} onChange={(e) => set('email', e.target.value)} onBlur={blur('email')} />
+              <TextField label="E-mail" required={form.createAccount} type="email" autoComplete="email" placeholder="name@example.ru" value={form.email} error={show('email')} maxLength={100} onChange={(e) => set('email', e.target.value)} onBlur={blur('email')} />
             </div>
           </fieldset>
 
@@ -205,6 +228,29 @@ export default function Checkout() {
           <fieldset className="panel">
             <legend className="panel__title">4. Подтверждение</legend>
             <TextField label="Комментарий к заказу" multiline rows={3} value={form.comment} maxLength={500} onChange={(e) => set('comment', e.target.value)} />
+            {!isAuth && (
+              <>
+                <Checkbox
+                  label="Создать аккаунт и сохранить заказ"
+                  checked={form.createAccount}
+                  onChange={(e) => set('createAccount', e.target.checked)}
+                />
+                {form.createAccount ? (
+                  <PasswordField
+                    label="Пароль для входа"
+                    required
+                    value={form.password}
+                    error={show('password')}
+                    autoComplete="new-password"
+                    hint="Логином будет ваш e-mail. Статус заказа появится в личном кабинете"
+                    onChange={(e) => set('password', e.target.value)}
+                    onBlur={blur('password')}
+                  />
+                ) : (
+                  <p className="muted-note">Без аккаунта статус заказа виден только на странице подтверждения. Сохраните её адрес или номер заказа.</p>
+                )}
+              </>
+            )}
             <Checkbox label="Согласен на обработку персональных данных" checked={form.consent} error={show('consent')} onChange={(e) => set('consent', e.target.checked)} onBlur={blur('consent')} />
           </fieldset>
 

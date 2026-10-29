@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs'
 import Icon from '../components/Icon'
@@ -6,6 +7,7 @@ import NotFound from './NotFound'
 import { ordersApi } from '../api'
 import { DELIVERY, ORDER_STATUS, PAYMENTS } from '../constants'
 import { useAuth } from '../context/AuthContext'
+import { useUI } from '../context/UIContext'
 import { useAsync } from '../hooks/useAsync'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { addressLine, formatPrice, orderNumber } from '../utils/format'
@@ -14,6 +16,8 @@ import { addressLine, formatPrice, orderNumber } from '../utils/format'
 export default function OrderSuccess() {
   const { orderId } = useParams()
   const { isAuth } = useAuth()
+  const { showToast } = useUI()
+  const [copied, setCopied] = useState(false)
   const { data: order, loading, error, reload } = useAsync(() => ordersApi.getOrder(orderId), [orderId])
   useDocumentTitle(order ? `Заказ ${orderNumber(order.id)} оформлен` : 'Заказ')
 
@@ -23,6 +27,18 @@ export default function OrderSuccess() {
 
   const delivery = DELIVERY.find((d) => d.id === order.delivery)
   const payment = PAYMENTS.find((p) => p.id === order.payment)
+
+  // Копируем адрес страницы заказа. Если браузер запретил доступ к буферу, показываем подсказку.
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      setCopied(true)
+      showToast('Ссылка на заказ скопирована', 'success')
+      setTimeout(() => setCopied(false), 2500)
+    } catch {
+      showToast('Браузер не дал скопировать. Скопируйте адрес страницы вручную', 'info')
+    }
+  }
 
   return (
     <div className="container section section--tight">
@@ -50,8 +66,19 @@ export default function OrderSuccess() {
           <p className="muted-note">Оплата: {payment?.short || '-'}. Адрес: {addressLine(order) || '-'}</p>
         </section>
 
+        {!isAuth && (
+          <p className="muted-note success__hint">
+            Сохраните номер заказа {orderNumber(order.id)} или ссылку на эту страницу: по ней видно текущий статус.
+          </p>
+        )}
+
         <div className="state__actions">
           <Link to={isAuth ? '/profile/orders' : '/login'} className="btn btn--primary">Мои заказы</Link>
+          {!isAuth && (
+            <button type="button" className="btn btn--outline" onClick={copyLink}>
+              <Icon name={copied ? 'check' : 'link'} size={16} /> {copied ? 'Ссылка скопирована' : 'Скопировать ссылку'}
+            </button>
+          )}
           <Link to="/catalog" className="btn btn--outline">Продолжить покупки</Link>
         </div>
       </div>
