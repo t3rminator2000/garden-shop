@@ -1,0 +1,66 @@
+/* ---------- Шапка ---------- */
+.header { position: sticky; top: 0; z-index: 100; background: rgb(11 10 7 / 0.88); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+.header__bar { position: relative; display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: 'logo . nav' 'catalog search search'; align-items: center; gap: var(--space-2) var(--space-3); padding-block: var(--space-2) var(--space-3); }
+.logo { grid-area: logo; display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.125rem; letter-spacing: -0.01em; min-height: 44px; }
+.logo .icon { color: var(--accent); }
+.header__catalog { grid-area: catalog; padding: 0 16px; }
+.header__search { grid-area: search; min-width: 0; }
+.header__nav { grid-area: nav; display: flex; align-items: center; gap: 2px; }
+.header__link { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px; padding: 0 10px; border-radius: var(--radius-pill); color: var(--text-muted); font-size: 0.9375rem; transition: color var(--dur-fast), background var(--dur-fast); }
+.header__link:hover, .header__link.active { color: var(--text); background: var(--surface-3); }
+.header__label { display: none; }
+.header__badge { position: absolute; top: 2px; right: 0; min-width: 18px; height: 18px; padding: 0 5px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-pill); background: var(--accent); color: var(--accent-ink); font-size: 0.6875rem; font-weight: 700; }
+.header__badge--mobile { display: inline-flex; }
+
+@media (min-width: 992px) {
+  .header__bar { grid-template-columns: auto auto minmax(240px, 1fr) auto; grid-template-areas: 'logo catalog search nav'; gap: var(--space-4); padding-block: var(--space-3); }
+  .header__label { display: inline; }
+  .header__link { padding: 0 14px; }
+  .header__badge { position: static; }
+  .header__badge--mobile { display: none; }
+}
+
+/* ---------- Меню каталога ---------- */
+.catalog-menu { position: absolute; left: var(--gutter); right: var(--gutter); top: calc(100% - 2px); z-index: 120; padding: var(--space-5); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-lg); box-shadow: 0 24px 48px rgb(0 0 0 / 0.5); animation: pop-in var(--dur) var(--ease); max-height: calc(100dvh - var(--header-h) - 24px); overflow-y: auto; }
+.catalog-menu__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); margin-bottom: var(--space-5); }
+.catalog-menu__title { display: inline-block; font-weight: 600; margin-bottom: var(--space-2); }
+.catalog-menu__title:hover { color: var(--accent); }
+.catalog-menu__col li a { display: inline-block; padding: 5px 0; color: var(--text-muted); font-size: 0.9375rem; }
+.catalog-menu__col li a:hover { color: var(--accent); }
+.catalog-menu__all { width: 100%; }
+@media (min-width: 768px) { .catalog-menu__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .catalog-menu__all { width: auto; } }
+@media (min-width: 992px) { .catalog-menu { left: auto; right: auto; width: min(880px, calc(100% - var(--gutter) * 2)); left: var(--gutter); } }
+
+/* ---------- Поиск ---------- */
+.search { position: relative; }
+.search__form { position: relative; display: flex; align-items: center; }
+.search__icon { position: absolute; left: 16px; color: var(--text-muted); pointer-events: none; }
+.search__input { width: 100%; min-height: 44px; padding: 0 44px 0 44px; background: var(--surface-2); border: 1px solid var(--border-strong); border-radius: var(--radius-pill); color: var(--text); font-size: 1rem; transition: border-color var(--dur-fast); }
+.search__input::placeholder { color: var(--text-faint); }
+.search__input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+.search__clear { position: absolute; right: 4px; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--text-muted); }
+.search__clear:hover { color: var(--text); background: var(--surface-3); }
+.search__panel { position: absolute; left: 0; right: 0; top: calc(100% + 8px); z-index: 130; display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-4); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-lg); box-shadow: 0 24px 48px rgb(0 0 0 / 0.5); max-height: min(70dvh, 560px); overflow-y: auto; animation: pop-in var(--dur) var(--ease); }
+@media (min-width: 992px) { .search__panel { min-width: 440px; } }
+.search__title { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); font-weight: 500; margin-bottom: var(--space-2); }
+.search__list { display: flex; flex-direction: column; }
+.search__suggest { display: block; width: 100%; text-align: left; padding: 10px 8px; min-height: 44px; border-radius: var(--radius-sm); color: var(--text); }
+.search__suggest:hover { background: var(--surface-3); color: var(--accent); }
+.search__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.search__products { display: flex; flex-direction: column; gap: 2px; }
+.search__product { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: var(--space-3); padding: 6px 8px; border-radius: var(--radius-sm); }
+.search__product:hover { background: var(--surface-3); }
+.search__thumb { width: 44px; height: 44px; border-radius: var(--radius-sm); overflow: hidden; }
+.search__product-title { font-size: 0.9375rem; line-height: 1.3; min-width: 0; }
+.search__product-price { font-weight: 600; white-space: nowrap; font-size: 0.9375rem; }
+.search__empty { color: var(--text-muted); padding: var(--space-2) 8px; }
+
+/* ---------- Подвал ---------- */
+.footer { margin-top: var(--space-8); border-top: 1px solid var(--border); background: var(--surface); }
+.footer__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-5); padding-block: var(--space-7); }
+@media (min-width: 992px) { .footer__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.footer__title { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); font-weight: 500; margin-bottom: var(--space-3); }
+.footer li { padding: 4px 0; }
+.footer a { display: inline-block; min-height: 28px; color: var(--text-muted); font-size: 0.9375rem; }
+.footer a:hover { color: var(--accent); }
+.footer__muted, .footer__stub { color: var(--text-faint); font-size: 0.9375rem; }

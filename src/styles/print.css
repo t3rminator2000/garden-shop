@@ -1,0 +1,142 @@
+/* Печать накладной. На экране блок скрыт, на печати остаётся только он. */
+.invoice {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
+  html,
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .invoice,
+  .invoice * {
+    visibility: visible;
+  }
+
+  .invoice {
+    display: block;
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 11pt;
+    line-height: 1.4;
+    color: #000;
+  }
+
+  .invoice__head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12mm;
+    padding-bottom: 4mm;
+    border-bottom: 1px solid #000;
+  }
+
+  .invoice__shop {
+    font-size: 14pt;
+    font-weight: 700;
+  }
+
+  .invoice__contacts {
+    font-size: 10pt;
+  }
+
+  .invoice__num {
+    text-align: right;
+    font-weight: 700;
+  }
+
+  .invoice__meta {
+    margin-top: 5mm;
+    border-collapse: collapse;
+  }
+
+  .invoice__meta th {
+    width: 38mm;
+    padding: 1mm 4mm 1mm 0;
+    text-align: left;
+    font-weight: 400;
+    color: #444;
+    vertical-align: top;
+  }
+
+  .invoice__meta td {
+    padding: 1mm 0;
+  }
+
+  .invoice__items {
+    width: 100%;
+    margin-top: 6mm;
+    border-collapse: collapse;
+  }
+
+  .invoice__items th,
+  .invoice__items td {
+    padding: 2mm 3mm;
+    border: 1px solid #000;
+    text-align: left;
+  }
+
+  .invoice__items {
+    table-layout: fixed;
+  }
+
+  .invoice__items th:first-child,
+  .invoice__items td:first-child {
+    width: 10mm;
+    text-align: center;
+  }
+
+  .invoice__items th:nth-child(3),
+  .invoice__items td:nth-child(3) {
+    width: 20mm;
+  }
+
+  .invoice__items th:nth-child(4),
+  .invoice__items td:nth-child(4),
+  .invoice__items th:nth-child(5),
+  .invoice__items td:nth-child(5) {
+    width: 26mm;
+  }
+
+  .invoice__items th:nth-child(n + 3),
+  .invoice__items td:nth-child(n + 3) {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .invoice__items tfoot td {
+    border: 0;
+    padding: 1mm 3mm;
+    text-align: right;
+  }
+
+  .invoice__total td {
+    padding-top: 2mm;
+    border-top: 1px solid #000;
+    font-weight: 700;
+    font-size: 12pt;
+  }
+
+  .invoice__comment {
+    margin-top: 5mm;
+  }
+
+  .invoice__signs {
+    margin-top: 14mm;
+    display: flex;
+    flex-direction: column;
+    gap: 8mm;
+  }
+}
