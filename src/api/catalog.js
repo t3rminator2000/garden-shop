@@ -4,6 +4,7 @@ import { request, ApiError } from './client'
 import { readStorage, writeStorage } from '../utils/storage'
 import { LS, CATEGORIES, PER_PAGE, getCategory } from '../constants'
 import { firstLetter, normalize } from '../utils/format'
+import { validateImageUrl } from '../utils/validators'
 import { csvToObjects, toCsv } from '../utils/csv'
 
 const DATA_URL = `${import.meta.env.BASE_URL}data/`
@@ -275,7 +276,7 @@ export async function saveProduct(input) {
 }
 
 // Колонки файла для импорта и экспорта каталога
-export const IMPORT_COLUMNS = ['id', 'sku', 'title', 'category', 'sub', 'price', 'discount', 'stock', 'brand', 'published', 'description']
+export const IMPORT_COLUMNS = ['id', 'sku', 'title', 'category', 'sub', 'price', 'discount', 'stock', 'brand', 'published', 'image', 'description']
 
 // Выгрузка каталога в CSV или JSON. Возвращает готовый текст файла.
 export async function exportProducts(format = 'csv') {
@@ -283,7 +284,7 @@ export async function exportProducts(format = 'csv') {
   const rows = list.map((p) => ({
     id: p.id, sku: p.sku, title: p.title, category: p.category, sub: p.sub,
     price: p.price, discount: p.discount, stock: p.stock, brand: p.brand,
-    published: p.published ? 1 : 0, description: p.description,
+    published: p.published ? 1 : 0, image: p.images[0] || '', description: p.description,
   }))
   if (format === 'json') return JSON.stringify(rows, null, 2)
   return toCsv(rows, IMPORT_COLUMNS)
@@ -319,6 +320,9 @@ function rowToRecord(raw, { all, usedSku, usedId, nextId }) {
 
   const sub = String(raw.sub ?? '').trim()
   const publishedRaw = String(raw.published ?? '1').trim().toLowerCase()
+  // Путь к фото: либо /images/файл.jpg внутри сайта, либо ссылка http или https
+  const image = String(raw.image ?? '').trim()
+  if (image && validateImageUrl(image)) return { error: `неверный путь к фото: ${image}` }
   return {
     record: {
       id,
@@ -336,7 +340,7 @@ function rowToRecord(raw, { all, usedSku, usedId, nextId }) {
       createdAt: current ? current.createdAt : new Date().toISOString().slice(0, 10),
       description: String(raw.description ?? current?.description ?? '').trim().slice(0, 3000),
       specs: current?.specs || [],
-      images: current?.images || [],
+      images: image ? [image] : current?.images || [],
     },
     isNew: !current,
   }

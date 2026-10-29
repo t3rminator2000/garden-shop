@@ -25,13 +25,15 @@
 Админ-панель
 - Печать накладной: заказы, кнопка «Открыть», затем «Печать накладной».
 - Импорт товаров: кнопка «Импорт из файла», формат CSV или JSON.
-  Колонки: id, sku, title, category, sub, price, discount, stock, brand, published, description.
+  Колонки: id, sku, title, category, sub, price, discount, stock, brand, published, image, description.
+  В колонке image путь к фото: /images/000123.jpg или ссылка http и https.
   Товар с известным артикулом обновляется, остальные добавляются.
   Образец файла даёт кнопка «Экспорт CSV».
 
 Данные: товары в public/data/products.json, заказы в public/data/orders.json.
 Корзина, избранное, сравнение, заказы, отзывы и правки админа хранятся в localStorage.
-Фото: положи файлы в public/images и впиши путь в поле images товара.
+Фото: положи файлы в public/images, затем впиши путь в карточке товара в админке
+или залей все пути разом через импорт CSV (колонка image).
 Видео на главной: переменная VITE_HERO_VIDEO в файле .env, значение off отключает видео.
 
 Публикация на GitHub Pages
