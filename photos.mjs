@@ -24,6 +24,47 @@ const CATEGORY_FILES = ['cat-seeds-vegetables', 'cat-seeds-flowers', 'cat-saplin
 
 const kb = (n) => `${Math.round(n / 1024)} КБ`
 
+// Насколько кадр отличается от 4 к 3, чтобы его ещё можно было обрезать без потерь
+const RATIO = W / H
+const RATIO_TOLERANCE = 0.06
+const PATCH = 40
+
+// Средний цвет по четырём углам. Нужен, когда кадр не 4 к 3: поля заливаем
+// цветом фона самой картинки, и стык не виден.
+const edgeColor = async (file) => {
+  const img = sharp(file)
+  const { width, height } = await img.metadata()
+  const size = Math.min(PATCH, Math.floor(width / 4), Math.floor(height / 4))
+  const corners = [
+    { left: 0, top: 0 },
+    { left: width - size, top: 0 },
+    { left: 0, top: height - size },
+    { left: width - size, top: height - size },
+  ]
+  const sums = [0, 0, 0]
+  let pixels = 0
+  for (const c of corners) {
+    const { data } = await sharp(file).extract({ ...c, width: size, height: size }).removeAlpha().raw().toBuffer({ resolveWithObject: true })
+    for (let i = 0; i < data.length; i += 3) {
+      sums[0] += data[i]
+      sums[1] += data[i + 1]
+      sums[2] += data[i + 2]
+      pixels += 1
+    }
+  }
+  if (!pixels) return { r: 20, g: 19, b: 16 }
+  const [r, g, b] = sums.map((s) => Math.round(s / pixels))
+  return { r, g, b }
+}
+
+// Кадр 4 к 3 обрезаем по центру, остальные вписываем целиком на фон их же цвета
+const resizeOptions = async (file) => {
+  const { width, height } = await sharp(file).metadata()
+  if (!width || !height) throw new Error('не удалось прочитать размеры')
+  if (Math.abs(width / height - RATIO) <= RATIO_TOLERANCE) return { fit: 'cover', position: 'centre', mode: 'обрезка' }
+  return { fit: 'contain', background: await edgeColor(file), mode: 'поля по бокам' }
+}
+
 let files = []
 try {
   files = (await readdir(SRC)).filter((f) => ALLOWED.includes(extname(f).toLowerCase()))
@@ -68,19 +109,18 @@ for (const file of files.sort()) {
   const outName = product ? `${product.sku}.jpg` : `${name}.jpg`
   try {
     const { size } = await stat(src)
-    // fit: cover - кадр заполняется целиком, лишнее обрезается симметрично от центра
-    await sharp(src).resize(W, H, { fit: 'cover', position: 'centre' }).jpeg({ quality: QUALITY, mozjpeg: true }).toFile(join(OUT, outName))
+    const { mode, ...fit } = await resizeOptions(src)
+    await sharp(src).resize(W, H, fit).jpeg({ quality: QUALITY, mozjpeg: true }).toFile(join(OUT, outName))
     const res = await stat(join(OUT, outName))
     before += size
     after += res.size
     done += 1
+    const label = product ? product.title : 'плитка категории'
     if (product) {
       product.images = [`/images/${outName}`]
       linked += 1
-      console.log(`${file} -> ${outName}   ${kb(size)} -> ${kb(res.size)}   ${product.title}`)
-    } else {
-      console.log(`${file} -> ${outName}   ${kb(size)} -> ${kb(res.size)}   плитка категории`)
     }
+    console.log(`${file} -> ${outName}   ${kb(size)} -> ${kb(res.size)}   ${mode}   ${label}`)
   } catch (err) {
     failed += 1
     console.error(`${file}: не удалось обработать (${err.message})`)
