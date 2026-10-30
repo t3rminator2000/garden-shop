@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "build:offline": "node build-offline.mjs",
-    "build:pages": "node build-pages.mjs"
+    "build:pages": "node build-pages.mjs",
+    "photos": "node photos.mjs"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "^5.3.0",
@@ -25,6 +26,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "oxlint": "^1.89.0",
+    "sharp": "^0.35.5",
     "vite": "^8.3.5"
   }
 }
