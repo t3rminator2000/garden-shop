@@ -13,6 +13,7 @@ export const CATEGORIES = [
   {
     slug: 'seeds-vegetables',
     title: 'Семена овощей',
+    photo: '/images/cat-seeds-vegetables.jpg',
     subs: [
       { slug: 'tomatoes', title: 'Томаты' },
       { slug: 'cucumbers', title: 'Огурцы' },
@@ -26,6 +27,7 @@ export const CATEGORIES = [
   {
     slug: 'seeds-flowers',
     title: 'Семена цветов',
+    photo: '/images/cat-seeds-flowers.jpg',
     subs: [
       { slug: 'annuals', title: 'Однолетники' },
       { slug: 'perennials', title: 'Многолетники' },
@@ -34,6 +36,7 @@ export const CATEGORIES = [
   {
     slug: 'saplings',
     title: 'Саженцы',
+    photo: '/images/cat-saplings.jpg',
     subs: [
       { slug: 'berries', title: 'Ягодные' },
       { slug: 'fruit', title: 'Плодовые' },
@@ -43,6 +46,7 @@ export const CATEGORIES = [
   {
     slug: 'fertilizers',
     title: 'Удобрения',
+    photo: '/images/cat-fertilizers.jpg',
     subs: [
       { slug: 'vegetables', title: 'Для овощей' },
       { slug: 'universal', title: 'Универсальные' },
@@ -51,6 +55,7 @@ export const CATEGORIES = [
   {
     slug: 'tools',
     title: 'Инструмент',
+    photo: '/images/cat-tools.jpg',
     subs: [
       { slug: 'hand', title: 'Ручной инструмент' },
       { slug: 'gloves', title: 'Перчатки' },
@@ -59,6 +64,7 @@ export const CATEGORIES = [
   {
     slug: 'greenhouses',
     title: 'Теплицы и полив',
+    photo: '/images/cat-greenhouses.jpg',
     subs: [
       { slug: 'watering', title: 'Полив' },
       { slug: 'cover', title: 'Укрытия' },

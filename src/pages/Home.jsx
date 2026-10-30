@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import HeroBackground from '../components/HeroBackground'
 import Icon from '../components/Icon'
-import PhotoPlaceholder from '../components/PhotoPlaceholder'
+import ProductImage from '../components/ProductImage'
 import ProductGrid from '../components/ProductGrid'
 import { ErrorState } from '../components/States'
 import { catalogApi } from '../api'
@@ -48,7 +48,7 @@ export default function Home() {
           {CATEGORIES.map((c) => (
             <li key={c.slug}>
               <Link to={`/catalog/${c.slug}`} className="cat-tile">
-                <PhotoPlaceholder label="Фото" className="cat-tile__photo" />
+                <ProductImage product={{ title: c.title, images: [c.photo] }} label="Фото" className="cat-tile__photo" />
                 <span className="cat-tile__name">{c.title}</span>
               </Link>
             </li>
