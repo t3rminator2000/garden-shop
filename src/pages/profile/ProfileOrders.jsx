@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Icon from '../../components/Icon'
 import OrderStatus from '../../components/OrderStatus'
-import PhotoPlaceholder from '../../components/PhotoPlaceholder'
+import ProductImage from '../../components/ProductImage'
 import { EmptyState, ErrorState, Spinner } from '../../components/States'
 import { catalogApi, ordersApi } from '../../api'
 import { DELIVERY, PAYMENTS } from '../../constants'
@@ -23,7 +23,18 @@ export default function ProfileOrders() {
   const { user } = useAuth()
   const { add } = useCart()
   const { openCart, showToast } = useUI()
-  const { data: orders, loading, error, reload } = useAsync(() => ordersApi.listUserOrders(user.key), [user.key])
+  // В заказе хранится название и цена на момент покупки, фото там нет.
+  // Поэтому для миниатюр подтягиваем товары из каталога.
+  const { data, loading, error, reload } = useAsync(async () => {
+    const list = await ordersApi.listUserOrders(user.key)
+    const ids = [...new Set(list.flatMap((o) => o.items.map((i) => i.productId)))]
+    let products = []
+    // Заказы важнее миниатюр: если каталог не ответил, показываем список без фото
+    if (ids.length) products = await catalogApi.getProductsByIds(ids).catch(() => [])
+    return { orders: list, byId: new Map(products.map((p) => [p.id, p])) }
+  }, [user.key])
+  const orders = data?.orders
+  const byId = data?.byId
   const [selected, setSelected] = useState(null)
 
   useEffect(() => {
@@ -74,7 +85,9 @@ export default function ProfileOrders() {
             </div>
             <div className="order__body">
               <div className="order__thumbs" aria-hidden="true">
-                {o.items.slice(0, 3).map((i) => <PhotoPlaceholder key={i.productId} label="Фото" className="order__thumb" iconSize={16} />)}
+                {o.items.slice(0, 3).map((i) => (
+                  <ProductImage key={i.productId} product={byId?.get(i.productId) || { title: i.title }} label="Фото" className="order__thumb" iconSize={16} />
+                ))}
               </div>
               <span className="order__count">{goodsLabel(o.items.length)}</span>
               <strong className="order__sum">{formatPrice(o.total)}</strong>
