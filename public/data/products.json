@@ -3157,7 +3157,9 @@
     "Бренд А"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000412.jpg"
+  ],
   "reviews": [
    {
     "id": "412-r1",
@@ -3297,7 +3299,9 @@
     "Бренд А"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000413.jpg"
+  ],
   "reviews": [
    {
     "id": "413-r1",
@@ -3395,7 +3399,9 @@
     "Бренд Б"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000414.jpg"
+  ],
   "reviews": [
    {
     "id": "414-r1",
@@ -3510,7 +3516,9 @@
     "Бренд В"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000415.jpg"
+  ],
   "reviews": [
    {
     "id": "415-r1",
@@ -3622,7 +3630,9 @@
     "Бренд А"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000530.jpg"
+  ],
   "reviews": [
    {
     "id": "530-r1",
@@ -3877,7 +3887,9 @@
     "Бренд Б"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000531.jpg"
+  ],
   "reviews": [
    {
     "id": "531-r1",
@@ -3999,7 +4011,9 @@
     "Бренд Б"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000532.jpg"
+  ],
   "reviews": [
    {
     "id": "532-r1",
@@ -4166,7 +4180,9 @@
     "Бренд В"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000534.jpg"
+  ],
   "reviews": [
    {
     "id": "534-r1",
@@ -4337,7 +4353,9 @@
     "Бренд А"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000535.jpg"
+  ],
   "reviews": [
    {
     "id": "535-r1",
@@ -4417,7 +4435,9 @@
     "Бренд Б"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000544.jpg"
+  ],
   "reviews": [
    {
     "id": "544-r1",
@@ -4567,7 +4587,9 @@
     "Бренд А"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000545.jpg"
+  ],
   "reviews": [
    {
     "id": "545-r1",
@@ -4696,7 +4718,9 @@
     "Бренд В"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000546.jpg"
+  ],
   "reviews": [
    {
     "id": "546-r1",
@@ -4783,7 +4807,9 @@
     "Бренд А"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000547.jpg"
+  ],
   "reviews": [
    {
     "id": "547-r1",
@@ -4891,7 +4917,9 @@
     "Бренд Б"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000548.jpg"
+  ],
   "reviews": [
    {
     "id": "548-r1",
@@ -4961,7 +4989,9 @@
     "Бренд В"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000549.jpg"
+  ],
   "reviews": [
    {
     "id": "549-r1",
@@ -5083,7 +5113,9 @@
     "Бренд Б"
    ]
   ],
-  "images": [],
+  "images": [
+   "/images/000550.jpg"
+  ],
   "reviews": [
    {
     "id": "550-r1",
