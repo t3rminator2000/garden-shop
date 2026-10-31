@@ -16,16 +16,18 @@ import sharp from 'sharp'
 const SRC = 'photos-src'
 const OUT = 'public/images'
 const DATA = 'public/data/products.json'
+// Карточка товара показывает кадр 4 к 3, плитка категории на главной - квадрат
 const W = 800
 const H = 600
+const CATEGORY_W = 800
+const CATEGORY_H = 800
 const QUALITY = 85
 const ALLOWED = ['.png', '.jpg', '.jpeg', '.webp', '.avif']
 const CATEGORY_FILES = ['cat-seeds-vegetables', 'cat-seeds-flowers', 'cat-saplings', 'cat-fertilizers', 'cat-tools', 'cat-greenhouses']
 
 const kb = (n) => `${Math.round(n / 1024)} КБ`
 
-// Насколько кадр отличается от 4 к 3, чтобы его ещё можно было обрезать без потерь
-const RATIO = W / H
+// Насколько кадр исходника может отличаться от нужного, чтобы обрезка не съела лишнее
 const RATIO_TOLERANCE = 0.06
 const PATCH = 40
 
@@ -57,12 +59,12 @@ const edgeColor = async (file) => {
   return { r, g, b }
 }
 
-// Кадр 4 к 3 обрезаем по центру, остальные вписываем целиком на фон их же цвета
-const resizeOptions = async (file) => {
+// Кадр нужных пропорций обрезаем по центру, остальные вписываем целиком на фон их же цвета
+const resizeOptions = async (file, ratio) => {
   const { width, height } = await sharp(file).metadata()
   if (!width || !height) throw new Error('не удалось прочитать размеры')
-  if (Math.abs(width / height - RATIO) <= RATIO_TOLERANCE) return { fit: 'cover', position: 'centre', mode: 'обрезка' }
-  return { fit: 'contain', background: await edgeColor(file), mode: 'поля по бокам' }
+  if (Math.abs(width / height - ratio) <= RATIO_TOLERANCE) return { fit: 'cover', position: 'centre', mode: 'обрезка' }
+  return { fit: 'contain', background: await edgeColor(file), mode: 'поля' }
 }
 
 let files = []
@@ -109,8 +111,9 @@ for (const file of files.sort()) {
   const outName = product ? `${product.sku}.jpg` : `${name}.jpg`
   try {
     const { size } = await stat(src)
-    const { mode, ...fit } = await resizeOptions(src)
-    await sharp(src).resize(W, H, fit).jpeg({ quality: QUALITY, mozjpeg: true }).toFile(join(OUT, outName))
+    const [w, h] = isCategory ? [CATEGORY_W, CATEGORY_H] : [W, H]
+    const { mode, ...fit } = await resizeOptions(src, w / h)
+    await sharp(src).resize(w, h, fit).jpeg({ quality: QUALITY, mozjpeg: true }).toFile(join(OUT, outName))
     const res = await stat(join(OUT, outName))
     before += size
     after += res.size
