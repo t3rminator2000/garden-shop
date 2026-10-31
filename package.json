@@ -13,10 +13,8 @@
     "photos": "node photos.mjs"
   },
   "dependencies": {
-    "@fontsource-variable/cormorant-garamond": "^5.3.0",
-    "@fontsource-variable/onest": "^5.3.1",
+    "@fontsource-variable/golos-text": "^5.3.0",
     "@fontsource-variable/playfair-display": "^5.3.0",
-    "@fontsource/prata": "^5.3.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router-dom": "^6.30.6"

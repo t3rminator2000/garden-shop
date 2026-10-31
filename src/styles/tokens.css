@@ -25,7 +25,7 @@
   --rust-400: #ee7a66;
   --rust-500: #e5604d;
 
-  --font-sans: 'Onest Variable', 'Onest', 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'Golos Text Variable', 'Golos Text', 'Segoe UI', system-ui, sans-serif;
   /* Заголовочный шрифт. Меняется одной строкой, остальной текст остаётся прежним. */
   --font-display: 'Playfair Display Variable', Georgia, serif;
   --space-1: 0.25rem;
