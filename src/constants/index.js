@@ -158,6 +158,10 @@ export const INFO_LINKS = [
 
 // Ключи localStorage
 export const LS = {
+  // Данные магазина: при первом открытии заливаются из public/data, дальше живут здесь
+  dataClients: 'gs:data:clients',
+  dataProducts: 'gs:data:products',
+  dataOrders: 'gs:data:orders',
   cart: 'gs:cart',
   promo: 'gs:promo',
   compare: 'gs:compare',
@@ -166,9 +170,10 @@ export const LS = {
   session: 'gs:session',
   users: 'gs:users',
   profiles: 'gs:profiles',
-  orders: 'gs:orders',
-  orderOverrides: 'gs:order-overrides',
-  adminProducts: 'gs:admin-products',
+  // Ключи прежней схемы. Данных там больше нет, они удаляются при первой заливке
+  legacyOrders: 'gs:orders',
+  legacyOrderOverrides: 'gs:order-overrides',
+  legacyAdminProducts: 'gs:admin-products',
   reviews: 'gs:reviews',
   questions: 'gs:questions',
   orderCounter: 'gs:order-counter',

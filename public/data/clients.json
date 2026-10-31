@@ -1,0 +1,77 @@
+[
+ {
+  "id": 1,
+  "name": "Петрова Анна Сергеевна",
+  "email": "demo@garden.local",
+  "phone": "+7 (999) 000-00-02",
+  "ownerKey": "local:demo",
+  "address": {
+   "region": "Москва",
+   "index": "101000",
+   "city": "Москва",
+   "street": "ул. Примерная",
+   "house": "1",
+   "flat": "1"
+  }
+ },
+ {
+  "id": 2,
+  "name": "Иванов Иван Петрович",
+  "email": "ivanov@example.ru",
+  "phone": "+7 (999) 000-00-01",
+  "ownerKey": null,
+  "address": {
+   "region": "Кемеровская область",
+   "index": "652050",
+   "city": "Юрга",
+   "street": "ул. Ленина",
+   "house": "14",
+   "flat": "7"
+  }
+ },
+ {
+  "id": 3,
+  "name": "Сидоров Пётр Алексеевич",
+  "email": "sidorov@example.ru",
+  "phone": "+7 (999) 000-00-03",
+  "ownerKey": null,
+  "address": {
+   "region": "Новосибирская область",
+   "index": "630099",
+   "city": "Новосибирск",
+   "street": "ул. Садовая",
+   "house": "5",
+   "flat": "12"
+  }
+ },
+ {
+  "id": 4,
+  "name": "Кузнецов Андрей Николаевич",
+  "email": "kuznetsov@example.ru",
+  "phone": "+7 (999) 000-00-05",
+  "ownerKey": null,
+  "address": {
+   "region": "Свердловская область",
+   "index": "620014",
+   "city": "Екатеринбург",
+   "street": "ул. Полевая",
+   "house": "22",
+   "flat": ""
+  }
+ },
+ {
+  "id": 5,
+  "name": "Смирнова Ольга Ивановна",
+  "email": "smirnova@example.ru",
+  "phone": "+7 (999) 000-00-04",
+  "ownerKey": null,
+  "address": {
+   "region": "Республика Татарстан",
+   "index": "420012",
+   "city": "Казань",
+   "street": "ул. Дачная",
+   "house": "3",
+   "flat": "45"
+  }
+ }
+]

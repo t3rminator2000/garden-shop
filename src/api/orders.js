@@ -1,48 +1,39 @@
-// Заказы. Учебные заказы читаются из public/data/orders.json через fetch,
-// новые заказы и смена статусов хранятся в localStorage.
-// При оформлении заказа дополнительно отправляется POST /carts/add на DummyJSON (имитация).
+// Заказы. Лежат в localStorage: туда их заливает слой store из файла
+// public/data/orders.json при первом открытии сайта. Новые заказы и смена
+// статусов пишутся в тот же набор. Заказ ссылается на клиента полем clientId.
+// При оформлении дополнительно уходит POST /carts/add на DummyJSON (имитация).
 import { request, ApiError, DUMMYJSON } from './client'
 import { readStorage, writeStorage } from '../utils/storage'
+import { ORDERS, readCollection, writeCollection } from './store'
 import { LS, DELIVERY, PAYMENTS, ORDER_STATUS, deliveryCost } from '../constants'
 import { promoDiscount } from '../utils/promo'
 import { getProductsByIds } from './catalog'
+import { findByOwnerKey, resolveClient } from './clients'
 
-const DATA_URL = `${import.meta.env.BASE_URL}data/`
-let seedCache = null
-
-function loadSeed() {
-  if (!seedCache) {
-    seedCache = request(`${DATA_URL}orders.json`)
-      .then((d) => (Array.isArray(d) ? d : []))
-      .catch((err) => {
-        seedCache = null
-        throw err
-      })
+function sanitizeOrder(raw) {
+  if (!raw || typeof raw !== 'object') return null
+  const id = Number(raw.id)
+  if (!Number.isFinite(id) || !Array.isArray(raw.items)) return null
+  const clientId = Number(raw.clientId)
+  return {
+    ...raw,
+    id,
+    clientId: Number.isFinite(clientId) ? clientId : null,
+    status: ORDER_STATUS[raw.status] ? raw.status : 'new',
   }
-  return seedCache
 }
-
-const localOrders = () => {
-  const l = readStorage(LS.orders, [])
-  return Array.isArray(l) ? l : []
-}
-const overrides = () => readStorage(LS.orderOverrides, {})
 
 export async function listOrders() {
-  let seed = []
-  try {
-    seed = await loadSeed()
-  } catch {
-    /* без файла учебных заказов работаем только с локальными */
-  }
-  const ov = overrides()
-  const all = [...localOrders(), ...seed.filter((s) => !localOrders().some((l) => l.id === s.id))]
-  return all.map((o) => (ov[o.id] ? { ...o, status: ov[o.id] } : o)).sort((a, b) => b.id - a.id)
+  const rows = await readCollection(ORDERS)
+  return rows.map(sanitizeOrder).filter(Boolean).sort((a, b) => b.id - a.id)
 }
 
+// Заказы покупателя. Ищем через клиента, привязанного к его учётной записи.
 export async function listUserOrders(ownerKey) {
   if (!ownerKey) return []
-  return (await listOrders()).filter((o) => o.ownerKey === ownerKey)
+  const client = await findByOwnerKey(ownerKey)
+  if (!client) return []
+  return (await listOrders()).filter((o) => o.clientId === client.id)
 }
 
 export async function getOrder(id) {
@@ -74,10 +65,14 @@ export async function createOrder({ lines, contact, delivery, region, address, p
   const id = Math.max(counter, ...existing.map((o) => o.id), 0) + 1
   writeStorage(LS.orderCounter, id)
 
+  // Клиент заводится при первом заказе, при повторном - находится по учётной записи или e-mail
+  const client = await resolveClient({ ownerKey, contact, address: { region, ...address } })
+
   const order = {
     id,
     createdAt: new Date().toISOString().slice(0, 10),
     status: 'new',
+    clientId: client.id,
     contact,
     delivery,
     deliveryCost: cost,
@@ -89,9 +84,8 @@ export async function createOrder({ lines, contact, delivery, region, address, p
     discount,
     total: Math.max(0, goods + cost - discount),
     comment: String(comment || '').trim().slice(0, 500),
-    ownerKey: ownerKey || null,
   }
-  writeStorage(LS.orders, [order, ...localOrders()])
+  writeCollection(ORDERS, [order, ...existing])
 
   // Имитация отправки заказа на сервер DummyJSON. Ошибка не мешает оформлению.
   const userId = ownerKey?.startsWith('dj:') ? Number(ownerKey.slice(3)) : 1
@@ -107,11 +101,8 @@ export async function createOrder({ lines, contact, delivery, region, address, p
 export async function updateOrderStatus(id, status) {
   if (!ORDER_STATUS[status]) throw new ApiError('Неизвестный статус', { kind: 'validation' })
   const n = Number(id)
-  const local = localOrders()
-  if (local.some((o) => o.id === n)) {
-    writeStorage(LS.orders, local.map((o) => (o.id === n ? { ...o, status } : o)))
-  } else {
-    writeStorage(LS.orderOverrides, { ...overrides(), [n]: status })
-  }
+  const all = await listOrders()
+  if (!all.some((o) => o.id === n)) throw new ApiError('Заказ не найден', { kind: 'validation' })
+  writeCollection(ORDERS, all.map((o) => (o.id === n ? { ...o, status } : o)))
   return getOrder(n)
 }

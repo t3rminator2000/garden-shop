@@ -1,4 +1,6 @@
 export * as catalogApi from './catalog'
 export * as authApi from './auth'
 export * as ordersApi from './orders'
+export * as clientsApi from './clients'
+export * as storeApi from './store'
 export { ApiError } from './client'

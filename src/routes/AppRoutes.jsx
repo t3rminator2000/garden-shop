@@ -27,6 +27,7 @@ import ProfileData from '../pages/profile/ProfileData'
 // Админ-панель грузится отдельным файлом, обычным покупателям она не нужна
 const AdminProducts = lazy(() => import('../pages/admin/AdminProducts'))
 const AdminOrders = lazy(() => import('../pages/admin/AdminOrders'))
+const AdminClients = lazy(() => import('../pages/admin/AdminClients'))
 
 const Fallback = () => (
   <div className="container section" style={{ textAlign: 'center' }}>
@@ -73,6 +74,7 @@ export default function AppRoutes() {
             <Route index element={<Navigate to="products" replace />} />
             <Route path="products" element={<AdminProducts />} />
             <Route path="orders" element={<AdminOrders />} />
+            <Route path="clients" element={<AdminClients />} />
           </Route>
         </Route>
       </Routes>

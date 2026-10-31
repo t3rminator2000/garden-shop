@@ -1,1 +1,214 @@
-[{"id":158,"createdAt":"2026-10-22","status":"new","contact":{"name":"Иванов Иван","phone":"+7 (999) 000-00-01","email":"ivanov@example.ru"},"delivery":"office","deliveryCost":0,"payment":"cod","address":{"region":"Москва","index":"101000","city":"","street":"","house":"","flat":"1"},"items":[{"productId":412,"title":"Удобрение для томатов, 1 кг","price":185,"qty":1}],"goods":185,"total":185,"comment":"","ownerKey":"local:demo","seed":true},{"id":141,"createdAt":"2026-10-18","status":"processing","contact":{"name":"Петрова Анна","phone":"+7 (999) 000-00-02","email":"name@example.ru"},"delivery":"courier","deliveryCost":450,"payment":"card","address":{"region":"Москва","index":"101000","city":"Москва","street":"ул. Примерная","house":"1","flat":"1"},"items":[{"productId":125,"title":"Томат «Бычье сердце»","price":58,"qty":3},{"productId":544,"title":"Лейка 10 л","price":420,"qty":2}],"goods":1014,"total":1464,"comment":"Позвонить за час до доставки","ownerKey":"local:demo","seed":true},{"id":135,"createdAt":"2026-10-16","status":"shipped","contact":{"name":"Сидоров Пётр","phone":"+7 (999) 000-00-03","email":"sidorov@example.ru"},"delivery":"pickup_point","deliveryCost":180,"payment":"sbp","address":{"region":"Москва","index":"101000","city":"Москва","street":"ул. Садовая","house":"5","flat":"1"},"items":[{"productId":544,"title":"Лейка 10 л","price":420,"qty":1},{"productId":550,"title":"Грунт для рассады, 5 л","price":140,"qty":1},{"productId":549,"title":"Торфяные горшки, 10 шт.","price":120,"qty":1}],"goods":680,"total":860,"comment":"","ownerKey":null,"seed":true},{"id":123,"createdAt":"2026-10-12","status":"delivered","contact":{"name":"Смирнова Ольга","phone":"+7 (999) 000-00-04","email":"name@example.ru"},"delivery":"post","deliveryCost":250,"payment":"card","address":{"region":"Москва","index":"101000","city":"Москва","street":"ул. Примерная","house":"1","flat":"1"},"items":[{"productId":123,"title":"Томат «Сибирский ранний»","price":49,"qty":2},{"productId":187,"title":"Огурец «Родничок» F1","price":56,"qty":1},{"productId":412,"title":"Удобрение для томатов, 1 кг","price":185,"qty":1}],"goods":339,"total":589,"comment":"","ownerKey":"local:demo","seed":true},{"id":119,"createdAt":"2026-10-10","status":"delivered","contact":{"name":"Кузнецов Андрей","phone":"+7 (999) 000-00-05","email":"kuznetsov@example.ru"},"delivery":"office","deliveryCost":0,"payment":"cod","address":{"region":"Москва","index":"101000","city":"","street":"","house":"","flat":"1"},"items":[{"productId":534,"title":"Садовые перчатки","price":120,"qty":1},{"productId":535,"title":"Совок посадочный","price":150,"qty":1},{"productId":183,"title":"Салат «Одесский кучерявец»","price":30,"qty":1}],"goods":300,"total":300,"comment":"","ownerKey":null,"seed":true}]
+[
+ {
+  "id": 158,
+  "createdAt": "2026-10-22",
+  "status": "new",
+  "contact": {
+   "name": "Иванов Иван Петрович",
+   "phone": "+7 (999) 000-00-01",
+   "email": "ivanov@example.ru"
+  },
+  "delivery": "office",
+  "deliveryCost": 0,
+  "payment": "cod",
+  "address": {
+   "region": "Москва",
+   "index": "101000",
+   "city": "",
+   "street": "",
+   "house": "",
+   "flat": "1"
+  },
+  "items": [
+   {
+    "productId": 412,
+    "title": "Удобрение для томатов, 1 кг",
+    "price": 185,
+    "qty": 1
+   }
+  ],
+  "goods": 185,
+  "total": 185,
+  "comment": "",
+  "seed": true,
+  "clientId": 2
+ },
+ {
+  "id": 141,
+  "createdAt": "2026-10-18",
+  "status": "processing",
+  "contact": {
+   "name": "Петрова Анна Сергеевна",
+   "phone": "+7 (999) 000-00-02",
+   "email": "demo@garden.local"
+  },
+  "delivery": "courier",
+  "deliveryCost": 450,
+  "payment": "card",
+  "address": {
+   "region": "Москва",
+   "index": "101000",
+   "city": "Москва",
+   "street": "ул. Примерная",
+   "house": "1",
+   "flat": "1"
+  },
+  "items": [
+   {
+    "productId": 125,
+    "title": "Томат «Бычье сердце»",
+    "price": 58,
+    "qty": 3
+   },
+   {
+    "productId": 544,
+    "title": "Лейка 10 л",
+    "price": 420,
+    "qty": 2
+   }
+  ],
+  "goods": 1014,
+  "total": 1464,
+  "comment": "Позвонить за час до доставки",
+  "seed": true,
+  "clientId": 1
+ },
+ {
+  "id": 135,
+  "createdAt": "2026-10-16",
+  "status": "shipped",
+  "contact": {
+   "name": "Сидоров Пётр Алексеевич",
+   "phone": "+7 (999) 000-00-03",
+   "email": "sidorov@example.ru"
+  },
+  "delivery": "pickup_point",
+  "deliveryCost": 180,
+  "payment": "sbp",
+  "address": {
+   "region": "Москва",
+   "index": "101000",
+   "city": "Москва",
+   "street": "ул. Садовая",
+   "house": "5",
+   "flat": "1"
+  },
+  "items": [
+   {
+    "productId": 544,
+    "title": "Лейка 10 л",
+    "price": 420,
+    "qty": 1
+   },
+   {
+    "productId": 550,
+    "title": "Грунт для рассады, 5 л",
+    "price": 140,
+    "qty": 1
+   },
+   {
+    "productId": 549,
+    "title": "Торфяные горшки, 10 шт.",
+    "price": 120,
+    "qty": 1
+   }
+  ],
+  "goods": 680,
+  "total": 860,
+  "comment": "",
+  "seed": true,
+  "clientId": 3
+ },
+ {
+  "id": 123,
+  "createdAt": "2026-10-12",
+  "status": "delivered",
+  "contact": {
+   "name": "Петрова Анна Сергеевна",
+   "phone": "+7 (999) 000-00-02",
+   "email": "demo@garden.local"
+  },
+  "delivery": "post",
+  "deliveryCost": 250,
+  "payment": "card",
+  "address": {
+   "region": "Москва",
+   "index": "101000",
+   "city": "Москва",
+   "street": "ул. Примерная",
+   "house": "1",
+   "flat": "1"
+  },
+  "items": [
+   {
+    "productId": 123,
+    "title": "Томат «Сибирский ранний»",
+    "price": 49,
+    "qty": 2
+   },
+   {
+    "productId": 187,
+    "title": "Огурец «Родничок» F1",
+    "price": 56,
+    "qty": 1
+   },
+   {
+    "productId": 412,
+    "title": "Удобрение для томатов, 1 кг",
+    "price": 185,
+    "qty": 1
+   }
+  ],
+  "goods": 339,
+  "total": 589,
+  "comment": "",
+  "seed": true,
+  "clientId": 1
+ },
+ {
+  "id": 119,
+  "createdAt": "2026-10-10",
+  "status": "delivered",
+  "contact": {
+   "name": "Кузнецов Андрей Николаевич",
+   "phone": "+7 (999) 000-00-05",
+   "email": "kuznetsov@example.ru"
+  },
+  "delivery": "office",
+  "deliveryCost": 0,
+  "payment": "cod",
+  "address": {
+   "region": "Москва",
+   "index": "101000",
+   "city": "",
+   "street": "",
+   "house": "",
+   "flat": "1"
+  },
+  "items": [
+   {
+    "productId": 534,
+    "title": "Садовые перчатки",
+    "price": 120,
+    "qty": 1
+   },
+   {
+    "productId": 535,
+    "title": "Совок посадочный",
+    "price": 150,
+    "qty": 1
+   },
+   {
+    "productId": 183,
+    "title": "Салат «Одесский кучерявец»",
+    "price": 30,
+    "qty": 1
+   }
+  ],
+  "goods": 300,
+  "total": 300,
+  "comment": "",
+  "seed": true,
+  "clientId": 4
+ }
+]

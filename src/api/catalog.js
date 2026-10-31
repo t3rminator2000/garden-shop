@@ -1,14 +1,13 @@
-// Данные каталога. Товары запрашиваются через fetch из файла public/data/products.json,
-// правки администратора, отзывы и вопросы покупателей хранятся в localStorage.
-import { request, ApiError } from './client'
+// Каталог товаров. Товары лежат в localStorage: туда их заливает слой store
+// из файла public/data/products.json при первом открытии сайта.
+// Правки администратора пишутся в тот же набор, отзывы и вопросы - отдельными ключами.
+import { ApiError } from './client'
 import { readStorage, writeStorage } from '../utils/storage'
+import { PRODUCTS, readCollection, writeCollection, nextId } from './store'
 import { LS, CATEGORIES, PER_PAGE, getCategory } from '../constants'
 import { firstLetter, normalize } from '../utils/format'
 import { validateImageUrl } from '../utils/validators'
 import { csvToObjects, toCsv } from '../utils/csv'
-
-const DATA_URL = `${import.meta.env.BASE_URL}data/`
-let baseCache = null
 
 function sanitizeProduct(raw) {
   if (!raw || typeof raw !== 'object') return null
@@ -38,39 +37,8 @@ function sanitizeProduct(raw) {
   }
 }
 
-function loadBase() {
-  if (!baseCache) {
-    baseCache = request(`${DATA_URL}products.json`)
-      .then((data) => {
-        if (!Array.isArray(data)) throw new ApiError('Файл товаров повреждён', { kind: 'parse' })
-        return data.map(sanitizeProduct).filter(Boolean)
-      })
-      .catch((err) => {
-        baseCache = null
-        throw err
-      })
-  }
-  return baseCache
-}
-
-const readAdmin = () => {
-  const a = readStorage(LS.adminProducts, null)
-  return {
-    items: a && typeof a.items === 'object' && a.items ? a.items : {},
-    deleted: a && Array.isArray(a.deleted) ? a.deleted : [],
-  }
-}
-
-function mergeAdmin(base) {
-  const adm = readAdmin()
-  const deleted = new Set(adm.deleted)
-  const baseIds = new Set(base.map((p) => p.id))
-  const list = base.filter((p) => !deleted.has(p.id)).map((p) => (adm.items[p.id] ? { ...p, ...adm.items[p.id] } : p))
-  const extra = Object.values(adm.items)
-    .map(sanitizeProduct)
-    .filter((p) => p && !baseIds.has(p.id) && !deleted.has(p.id))
-  return [...list, ...extra]
-}
+// Товары из хранилища. Битые записи отбрасываются, чтобы страница не падала.
+const loadStored = async () => (await readCollection(PRODUCTS)).map(sanitizeProduct).filter(Boolean)
 
 export const finalPriceOf = (p) => Math.round(p.price * (1 - p.discount / 100))
 
@@ -95,8 +63,7 @@ function decorate(p) {
 }
 
 async function loadAll({ includeHidden = false } = {}) {
-  const base = await loadBase()
-  const all = mergeAdmin(base).map(decorate)
+  const all = (await loadStored()).map(decorate)
   return includeHidden ? all : all.filter((p) => p.published)
 }
 
@@ -236,9 +203,7 @@ export async function addQuestion(productId, { author, text }) {
 export const listAdminProducts = () => loadAll({ includeHidden: true })
 
 export async function saveProduct(input) {
-  const base = await loadBase()
-  const all = mergeAdmin(base)
-  const adm = readAdmin()
+  const all = await loadStored()
 
   const title = String(input.title || '').trim()
   if (title.length < 2) throw new ApiError('Введите название товара', { kind: 'validation' })
@@ -251,7 +216,7 @@ export async function saveProduct(input) {
   if (!Number.isInteger(stock) || stock < 0) throw new ApiError('Остаток должен быть целым числом', { kind: 'validation' })
 
   const isNew = !input.id
-  const id = isNew ? Math.max(0, ...all.map((p) => p.id), ...adm.deleted) + 1 : Number(input.id)
+  const id = isNew ? nextId(all) : Number(input.id)
   const sku = String(input.sku || '').trim() || String(id).padStart(6, '0')
   if (all.some((p) => p.sku === sku && p.id !== id)) throw new ApiError('Такой артикул уже есть', { kind: 'validation' })
 
@@ -269,10 +234,12 @@ export async function saveProduct(input) {
     description: String(input.description || '').trim().slice(0, 3000),
     specs: (input.specs || []).map((s) => [String(s[0] || '').trim(), String(s[1] || '').trim()]).filter((s) => s[0] && s[1]).slice(0, 20),
     images: input.image ? [String(input.image).trim()] : [],
+    // Отзывы и вопросы из файла принадлежат товару, при правке карточки они остаются
+    reviews: current?.reviews || [],
+    questions: current?.questions || [],
   }
-  adm.items[id] = record
-  writeStorage(LS.adminProducts, adm)
-  return decorate({ ...(current || {}), ...record, reviews: current?.reviews || [], questions: current?.questions || [] })
+  writeCollection(PRODUCTS, current ? all.map((p) => (p.id === id ? record : p)) : [...all, record])
+  return decorate(record)
 }
 
 // Колонки файла для импорта и экспорта каталога
@@ -296,7 +263,7 @@ const toNum = (v, fallback = 0) => {
 }
 
 // Проверка одной строки файла. Возвращает готовую запись или текст ошибки.
-function rowToRecord(raw, { all, usedSku, usedId, nextId }) {
+function rowToRecord(raw, { all, usedSku, usedId, freeId }) {
   const title = String(raw.title ?? '').trim()
   if (title.length < 2) return { error: 'пустое название' }
   const category = String(raw.category ?? '').trim()
@@ -312,7 +279,7 @@ function rowToRecord(raw, { all, usedSku, usedId, nextId }) {
   const rawId = Number(raw.id)
   const bySku = String(raw.sku ?? '').trim()
   const current = all.find((p) => (Number.isFinite(rawId) && p.id === rawId) || (bySku && p.sku === bySku))
-  const id = current ? current.id : nextId
+  const id = current ? current.id : freeId
   if (!current && usedId.has(id)) return { error: 'повтор идентификатора в файле' }
   const sku = bySku || String(id).padStart(6, '0')
   if (usedSku.has(sku)) return { error: `артикул ${sku} встречается в файле дважды` }
@@ -341,6 +308,8 @@ function rowToRecord(raw, { all, usedSku, usedId, nextId }) {
       description: String(raw.description ?? current?.description ?? '').trim().slice(0, 3000),
       specs: current?.specs || [],
       images: image ? [image] : current?.images || [],
+      reviews: current?.reviews || [],
+      questions: current?.questions || [],
     },
     isNew: !current,
   }
@@ -368,34 +337,34 @@ export async function importProducts(text) {
   }
   if (rows.length > 500) throw new ApiError('За один раз можно загрузить не больше 500 товаров', { kind: 'validation' })
 
-  const base = await loadBase()
-  const all = mergeAdmin(base)
-  const adm = readAdmin()
+  const all = await loadStored()
   const usedSku = new Set()
   const usedId = new Set()
-  let nextId = Math.max(0, ...all.map((p) => p.id), ...adm.deleted) + 1
+  let freeId = nextId(all)
 
   const errors = []
   const ready = []
   rows.forEach((raw, i) => {
-    const res = rowToRecord(raw || {}, { all, usedSku, usedId, nextId })
+    const res = rowToRecord(raw || {}, { all, usedSku, usedId, freeId })
     if (res.error) {
       errors.push({ line: i + 1, error: res.error })
       return
     }
     usedSku.add(res.record.sku)
     usedId.add(res.record.id)
-    if (res.isNew) nextId += 1
+    if (res.isNew) freeId += 1
     ready.push(res)
   })
 
   if (!ready.length) throw new ApiError(`Ни одной строки загрузить не удалось. Первая ошибка: строка ${errors[0]?.line} - ${errors[0]?.error}`, { kind: 'validation' })
 
+  const next = [...all]
   for (const { record } of ready) {
-    adm.items[record.id] = record
-    adm.deleted = adm.deleted.filter((d) => d !== record.id)
+    const at = next.findIndex((p) => p.id === record.id)
+    if (at === -1) next.push(record)
+    else next[at] = record
   }
-  writeStorage(LS.adminProducts, adm)
+  writeCollection(PRODUCTS, next)
 
   return {
     added: ready.filter((r) => r.isNew).length,
@@ -405,9 +374,8 @@ export async function importProducts(text) {
 }
 
 export async function deleteProduct(id) {
-  const adm = readAdmin()
   const n = Number(id)
-  delete adm.items[n]
-  if (!adm.deleted.includes(n)) adm.deleted.push(n)
-  writeStorage(LS.adminProducts, adm)
+  const all = await loadStored()
+  if (!all.some((p) => p.id === n)) throw new ApiError('Товар не найден', { kind: 'validation' })
+  writeCollection(PRODUCTS, all.filter((p) => p.id !== n))
 }
