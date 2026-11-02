@@ -144,7 +144,7 @@ export default function Cart() {
               <div className="summary__total"><dt>Итого</dt><dd>{formatPrice(Math.max(0, goodsTotal - promoDiscount))}</dd></div>
             </dl>
             <button type="button" className="btn btn--primary btn--block btn--lg" onClick={() => navigate('/checkout')} disabled={!lines.length}>Оформить заказ</button>
-            <p className="summary__note">Оформить заказ можно без регистрации</p>
+            <p className="summary__note">Для оформления нужен аккаунт, заказ сохранится в кабинете</p>
           </aside>
         </div>
       )}

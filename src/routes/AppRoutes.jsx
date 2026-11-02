@@ -46,7 +46,11 @@ export default function AppRoutes() {
           <Route path="product/:id" element={<Product />} />
           <Route path="search" element={<SearchPage />} />
           <Route path="cart" element={<Cart />} />
-          <Route path="checkout" element={<Checkout />} />
+          {/* Заказ оформляет только покупатель с аккаунтом: гостевые покупки
+              методичкой не поддерживаются. Гостя уводим на регистрацию. */}
+          <Route element={<ProtectedRoute to="/register" />}>
+            <Route path="checkout" element={<Checkout />} />
+          </Route>
           <Route path="checkout/success/:orderId" element={<OrderSuccess />} />
           <Route path="login" element={<AuthPage mode="login" />} />
           <Route path="register" element={<AuthPage mode="register" />} />

@@ -191,9 +191,15 @@
 /* ---------- Вход и регистрация ---------- */
 .auth { display: grid; grid-template-columns: 1fr; gap: var(--space-5); margin-top: var(--space-5); }
 @media (min-width: 768px) { .auth { grid-template-columns: 1fr 1fr; gap: var(--space-6); align-items: start; } }
+/* Одна форма вместо двух: вторая открывается ссылкой под кнопкой */
+.auth--single { max-width: 460px; }
+@media (min-width: 768px) { .auth--single { grid-template-columns: 1fr; } }
 .auth__form { height: 100%; }
 .auth__forgot { align-self: flex-start; }
+.auth__lead { max-width: 56ch; margin-top: var(--space-2); }
 .auth__hint, .auth__note { color: var(--text-muted); font-size: 0.875rem; }
+.auth__hint .link-btn { font-size: inherit; }
+.auth__demo { max-width: 460px; }
 .demo { margin-top: var(--space-5); padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); color: var(--text-muted); font-size: 0.9375rem; }
 .demo summary { cursor: pointer; color: var(--text); font-weight: 500; min-height: 32px; display: flex; align-items: center; }
 .demo p { margin-top: var(--space-2); }
