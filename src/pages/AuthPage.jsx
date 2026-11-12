@@ -16,8 +16,8 @@ const STRENGTH = {
 }
 
 // Вход и регистрация на одной странице (макет «Авторизация»).
-// Показывается одна форма, вторая открывается ссылкой под ней.
-// Какая форма первой, решает адрес: /register для покупки, /login для кабинета.
+// Формы переключаются вкладками в шапке карточки, показывается одна из двух.
+// Какая открыта первой, решает адрес: /register для покупки, /login для кабинета.
 export default function AuthPage({ mode }) {
   const { isAuth } = useAuth()
   const location = useLocation()
@@ -28,18 +28,40 @@ export default function AuthPage({ mode }) {
 
   const toCheckout = from === '/checkout'
   return (
-    <div className="container section section--tight">
+    <div className="container section section--tight auth-page">
       <Breadcrumbs items={[{ label: 'Главная', to: '/' }, { label: tab === 'register' ? 'Регистрация' : 'Вход' }]} />
       <h1 className="page-title">{tab === 'register' ? 'Регистрация' : 'Вход'}</h1>
       {toCheckout && (
         <p className="muted-note auth__lead">Заказы оформляются из личного кабинета, поэтому сначала создайте аккаунт или войдите.</p>
       )}
       <div className="auth auth--single">
-        {tab === 'register' ? (
-          <RegisterForm from={from} onSwitch={() => setTab('login')} />
-        ) : (
-          <LoginForm from={from} onSwitch={() => setTab('register')} />
-        )}
+        <div className="panel">
+          <div className="authtabs" role="tablist" aria-label="Вход или регистрация">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'login'}
+              className={`authtabs__btn${tab === 'login' ? ' is-active' : ''}`}
+              onClick={() => setTab('login')}
+            >
+              Вход
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'register'}
+              className={`authtabs__btn${tab === 'register' ? ' is-active' : ''}`}
+              onClick={() => setTab('register')}
+            >
+              Регистрация
+            </button>
+          </div>
+          {tab === 'register' ? (
+            <RegisterForm from={from} />
+          ) : (
+            <LoginForm from={from} />
+          )}
+        </div>
       </div>
       <p className="muted-note auth__note">
         {toCheckout ? 'После входа вы вернётесь к оформлению заказа, корзина сохранится' : 'После входа вы вернётесь на страницу, с которой начали'}
@@ -63,7 +85,7 @@ function DemoAccounts() {
   )
 }
 
-function LoginForm({ from, onSwitch }) {
+function LoginForm({ from }) {
   const { login } = useAuth()
   const { showToast } = useUI()
   const navigate = useNavigate()
@@ -90,21 +112,17 @@ function LoginForm({ from, onSwitch }) {
   }
 
   return (
-    <form className="panel auth__form" onSubmit={submit} noValidate aria-labelledby="login-title">
-      <h2 id="login-title" className="panel__title">Вход</h2>
+    <form className="auth__form" onSubmit={submit} noValidate aria-label="Вход">
       <TextField label="E-mail" name="email" autoComplete="username" placeholder="name@example.ru" value={form.id} maxLength={100} onChange={(e) => setForm({ ...form, id: e.target.value })} />
       <PasswordField label="Пароль" name="password" autoComplete="current-password" placeholder="••••••" value={form.password} maxLength={100} onChange={(e) => setForm({ ...form, password: e.target.value })} />
       {error && <p className="form-alert" role="alert"><Icon name="alert" size={18} /> {error}</p>}
       <Link to="/forgot-password" className="auth__forgot">Забыли пароль?</Link>
       <button type="submit" className="btn btn--primary btn--block btn--lg" disabled={busy}>{busy ? 'Входим…' : 'Войти'}</button>
-      <p className="auth__hint">
-        Нет аккаунта? <button type="button" className="link-btn" onClick={onSwitch}>Зарегистрироваться</button>
-      </p>
     </form>
   )
 }
 
-function RegisterForm({ from, onSwitch }) {
+function RegisterForm({ from }) {
   const { register } = useAuth()
   const { showToast } = useUI()
   const navigate = useNavigate()
@@ -150,8 +168,7 @@ function RegisterForm({ from, onSwitch }) {
   }
 
   return (
-    <form className="panel auth__form" onSubmit={submit} noValidate aria-labelledby="reg-title">
-      <h2 id="reg-title" className="panel__title">Регистрация</h2>
+    <form className="auth__form" onSubmit={submit} noValidate aria-label="Регистрация">
       <TextField label="Имя" name="name" autoComplete="name" placeholder="Ваше имя" value={form.name} error={shown('name')} maxLength={80} onChange={(e) => set('name', e.target.value)} onBlur={blur('name')} />
       <TextField label="E-mail" name="reg-email" type="email" autoComplete="email" placeholder="name@example.ru" value={form.email} error={shown('email')} maxLength={100} onChange={(e) => set('email', e.target.value)} onBlur={blur('email')} />
       <TextField label="Телефон" name="tel" type="tel" inputMode="tel" autoComplete="tel" placeholder="+7 (000) 000-00-00" value={form.phone} error={shown('phone')} onChange={(e) => set('phone', formatPhone(e.target.value))} onBlur={blur('phone')} />
@@ -171,9 +188,6 @@ function RegisterForm({ from, onSwitch }) {
       <PasswordField label="Повторите пароль" name="confirm-password" autoComplete="new-password" placeholder="Ещё раз пароль" value={form.confirm} error={shown('confirm')} maxLength={100} onChange={(e) => set('confirm', e.target.value)} onBlur={blur('confirm')} />
       {error && <p className="form-alert" role="alert"><Icon name="alert" size={18} /> {error}</p>}
       <button type="submit" className="btn btn--primary btn--block btn--lg" disabled={busy}>{busy ? 'Создаём…' : 'Зарегистрироваться'}</button>
-      <p className="auth__hint">
-        Уже есть аккаунт? <button type="button" className="link-btn" onClick={onSwitch}>Войти</button>
-      </p>
     </form>
   )
 }

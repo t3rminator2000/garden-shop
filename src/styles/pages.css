@@ -191,15 +191,22 @@
 /* ---------- Вход и регистрация ---------- */
 .auth { display: grid; grid-template-columns: 1fr; gap: var(--space-5); margin-top: var(--space-5); }
 @media (min-width: 768px) { .auth { grid-template-columns: 1fr 1fr; gap: var(--space-6); align-items: start; } }
-/* Одна форма вместо двух: вторая открывается ссылкой под кнопкой */
-.auth--single { max-width: 460px; }
+/* Одна карточка по центру: формы входа и регистрации переключаются вкладками */
+.auth--single { max-width: 460px; margin-inline: auto; }
 @media (min-width: 768px) { .auth--single { grid-template-columns: 1fr; } }
-.auth__form { height: 100%; }
+.authtabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); }
+.authtabs__btn { position: relative; min-height: 44px; color: var(--text-muted); font-size: 1rem; font-weight: 500; transition: color var(--dur-fast); }
+.authtabs__btn::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: transparent; transition: background var(--dur-fast); }
+.authtabs__btn:hover { color: var(--text); }
+.authtabs__btn.is-active { color: var(--text); font-weight: 600; }
+.authtabs__btn.is-active::after { background: var(--accent); }
+.auth__form { display: flex; flex-direction: column; gap: var(--space-4); }
 .auth__forgot { align-self: flex-start; }
-.auth__lead { max-width: 56ch; margin-top: var(--space-2); }
-.auth__hint, .auth__note { color: var(--text-muted); font-size: 0.875rem; }
-.auth__hint .link-btn { font-size: inherit; }
-.auth__demo { max-width: 460px; }
+.auth__lead { max-width: 56ch; margin: var(--space-2) auto 0; }
+.auth__note { color: var(--text-muted); font-size: 0.875rem; }
+.auth__demo { max-width: 460px; margin-inline: auto; }
+/* заголовок и подписи идут по центру вслед за карточкой */
+.auth-page .page-title, .auth-page .auth__note, .auth-page .auth__lead { text-align: center; }
 .demo { margin-top: var(--space-5); padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); color: var(--text-muted); font-size: 0.9375rem; }
 .demo summary { cursor: pointer; color: var(--text); font-weight: 500; min-height: 32px; display: flex; align-items: center; }
 .demo p { margin-top: var(--space-2); }
