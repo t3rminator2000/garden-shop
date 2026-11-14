@@ -37,7 +37,7 @@ export default function Home() {
       <section className="hero" aria-labelledby="hero-title">
         <HeroBackground />
         <div className="container hero__content">
-          <h1 id="hero-title" className="hero__title">Весенняя распродажа семян: скидки на популярные сорта</h1>
+          <h1 id="hero-title" className="hero__title">Товары для тех, кто <span className="hero__accent">сажает</span></h1>
           <Link to="/catalog?sale=1" className="btn btn--light btn--lg">Смотреть акции</Link>
         </div>
       </section>

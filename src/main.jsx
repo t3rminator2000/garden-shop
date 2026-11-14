@@ -7,6 +7,8 @@ import '@fontsource/fira-sans/500.css'
 import '@fontsource/fira-sans/600.css'
 import '@fontsource/fira-sans/700.css'
 import '@fontsource-variable/playfair-display'
+// курсив заголовка: им выделено последнее слово на баннере
+import '@fontsource-variable/playfair-display/wght-italic.css'
 import './styles/tokens.css'
 import './styles/base.css'
 import './styles/components.css'
